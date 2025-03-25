@@ -1,0 +1,62 @@
+﻿@model LoginModel
+
+<!DOCTYPE html>
+<head>
+	<title>Login Page</title>
+	<link rel="stylesheet" href="Style.css">
+	<script type="text/javascript" src="https://www.google.com/recaptcha/api.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="Script.js"></script>
+</head>
+<body>
+	<div class="login-page">
+		<div class="form">
+			<div class="login-form">
+				<form asp-action="LoginNow" asp-controller="Home">
+					<input type="text" asp-for="UserName" placeholder="Username" />
+					<input type="password" asp-for="Password" placeholder="Password" />
+					<input type="hidden" id="cKey" asp-for="CapKey" />
+				<div class="g-recaptcha" data-sitekey="6Lcq_f8qAAAAAOM0loH7TqMGmM11-NazqIBwda4f"></div><br>
+				@* <button onclick="LoginButton()">Login</button> *@
+
+				<div>
+						<button type="submit" onclick="LoginButton()">Login Now</button>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
+<script>
+	   function LoginButton(){
+		const reCaptchaResponse = grecaptcha.getResponse();
+		$("#cKey").val(reCaptchaResponse);
+		if(reCaptchaResponse){
+			alert($("#cKey").val())
+			$.ajax({
+				type: "GET",
+				url: "/Home/GetreCaptchaResponse",
+				data: {userResponse : reCaptchaResponse},
+				success: function(data){
+					console.log("data"+data)
+					if(data){
+						//API returned true
+						alert("Captcha Verified");
+
+					}else{
+						//API returned false
+						alert("Please verify captcha again");
+					}
+				},
+				error: function(error){
+					alert("Please try again");
+				}
+			});
+		}
+		else{
+			alert("Something went wrong with reCaptcha. Please try again!");
+		}
+	}
+</script>
